@@ -1,13 +1,40 @@
 import React from "react";
-// import ListingCard from "./ListingCard";
+import ListingCard from "./ListingCard";
 
-function ListingsContainer() {
-  return (
+function ListingsContainer({ listings, setListings, isLoaded }) {
+
+  function handleDelete(deleteId) {
+    fetch(`http://localhost:6001/listings/${deleteId}`, {
+      method: 'DELETE'
+    })
+    .then(resp => resp.json())
+    .then(() => updateListings(deleteId))
+  }
+
+  function updateListings(id) {
+    const updatedListings = listings.filter(listing => listing.id !== id);
+    setListings(updatedListings)
+  }
+
+  return isLoaded ? (
     <main>
       <ul className="cards">
-        {/* use the ListingCard component to display listings */}
+        {listings.map((listing) => {
+          return (
+            <ListingCard
+              key={listing.id}
+              id={listing.id}
+              description={listing.description}
+              image={listing.image}
+              location={listing.location}
+              onListingDelete={handleDelete}
+            />
+          );
+        })}
       </ul>
     </main>
+  ) : (
+    <h3>Loading...</h3>
   );
 }
 
